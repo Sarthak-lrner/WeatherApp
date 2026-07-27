@@ -12,6 +12,7 @@ import android.net.Uri
 import android.os.Bundle
 import android.os.Looper
 import android.provider.Settings
+import android.util.Log
 import android.widget.Toast
 import androidx.appcompat.app.AppCompatActivity
 import com.google.android.gms.location.FusedLocationProviderClient
@@ -74,13 +75,19 @@ class MainActivity : AppCompatActivity() {
     }
 
     @SuppressLint("MissingPermission")
-    private fun requestLocationData(){
-        val mLocationRequest = LocationRequest()
-        mLocationRequest.priority = LocationRequest.PRIORITY_HIGH_ACCURACY
+    private fun requestLocationData() {
+
+        val locationRequest = LocationRequest().apply {
+            priority = LocationRequest.PRIORITY_HIGH_ACCURACY
+            interval = 5000
+            fastestInterval = 2000
+            numUpdates = 1
+        }
 
         mFusedLocationClient.requestLocationUpdates(
-            mLocationRequest, mLocationCallback,
-            Looper.myLooper()
+            locationRequest,
+            mLocationCallback,
+            Looper.getMainLooper()
         )
     }
     private fun isLocationEnabled(): Boolean {
@@ -95,7 +102,26 @@ class MainActivity : AppCompatActivity() {
         override fun onLocationResult(locationResult: LocationResult){
             val mLastLocation: Location = locationResult.lastLocation
             val latitude = mLastLocation.latitude
+            Log.i("Latitude ","$latitude")
             val longitude = mLastLocation.longitude
+            Log.i("Longitude","$longitude")
+            getLocationWeatherDetails()
+        }
+    }
+
+    private fun getLocationWeatherDetails(){
+        if(Constants.isNetworkAvailable(this)){
+            Toast.makeText(
+                this@MainActivity,
+                "You have connected to Internet.",
+                Toast.LENGTH_SHORT
+            ).show()
+        }else{
+            Toast.makeText(
+                this@MainActivity,
+                "You are not connected to internet.",
+                Toast.LENGTH_SHORT
+            ).show()
         }
     }
 

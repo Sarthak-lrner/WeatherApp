@@ -34,6 +34,8 @@ android {
 }
 
 dependencies {
+    implementation(libs.retrofit)
+    implementation(libs.converter.gson)
     implementation(libs.material.v110)
     implementation(libs.play.services.location)
     implementation(libs.dexter)
