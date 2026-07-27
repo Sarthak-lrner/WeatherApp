@@ -1,6 +1,16 @@
+import java.util.Properties
+import kotlin.apply
+
 plugins {
     alias(libs.plugins.android.application)
 }
+
+val localProperties = Properties().apply {
+    load(rootProject.file("local.properties").inputStream())
+}
+
+val weatherApiKey = localProperties.getProperty("WEATHER_API_KEY")
+    ?: throw GradleException("WEATHER_API_KEY not found in local.properties")
 
 android {
     namespace = "com.example.weatherapp"
@@ -17,6 +27,12 @@ android {
         versionCode = 1
         versionName = "1.0"
 
+        buildConfigField(
+            "String",
+            "WEATHER_API_KEY",
+            "\"$weatherApiKey\""
+        )
+
         testInstrumentationRunner = "androidx.test.runner.AndroidJUnitRunner"
     }
 
@@ -27,6 +43,11 @@ android {
             }
         }
     }
+
+    buildFeatures {
+        buildConfig = true
+    }
+
     compileOptions {
         sourceCompatibility = JavaVersion.VERSION_11
         targetCompatibility = JavaVersion.VERSION_11
